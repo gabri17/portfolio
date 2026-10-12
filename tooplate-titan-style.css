@@ -544,6 +544,48 @@ section {
     margin: 0 auto;
 }
 
+.hero-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.95rem;
+    margin-bottom: 1.35rem;
+    background: rgba(13, 17, 23, 0.75);
+    border: 1px solid rgba(92, 184, 165, 0.28);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.2px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 16px rgba(92, 184, 165, 0.08);
+    animation: slideInUp 1s ease-out;
+}
+
+.hero-status strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.hero-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-emerald);
+    box-shadow: 0 0 8px var(--accent-emerald);
+    flex-shrink: 0;
+    animation: statusPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.45;
+        transform: scale(0.88);
+    }
+}
+
 .hero h1 {
     font-size: clamp(2.5rem, 8vw, 4.5rem);
     font-weight: 700;
@@ -551,7 +593,7 @@ section {
     color: var(--text-primary);
     line-height: 1.1;
     letter-spacing: -1.5px;
-    animation: slideInUp 1s ease-out;
+    animation: slideInUp 1s ease-out 0.1s both;
 }
 
 .hero .subtitle {
