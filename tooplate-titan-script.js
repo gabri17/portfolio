@@ -47,10 +47,25 @@ window.addEventListener('scroll', function() {
     }
 });
 
+// Mobile scroll progress bar fallback for browsers without CSS scroll-driven animations
+if (!window.CSS || !CSS.supports('animation-timeline', 'scroll()')) {
+    const scrollProgress = document.getElementById('scrollProgress');
+    if (scrollProgress) {
+        const updateScrollProgress = function() {
+            const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+            const progressPercentage = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+            scrollProgress.style.transform = `scaleX(${progressPercentage})`;
+        };
+        window.addEventListener('scroll', updateScrollProgress, { passive: true });
+        window.addEventListener('resize', updateScrollProgress);
+        updateScrollProgress();
+    }
+}
+
 // Scroll animations
 const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
+    threshold: 0.05,
+    rootMargin: '0px 0px -40px 0px'
 };
 
 const observer = new IntersectionObserver(function(entries) {
@@ -198,35 +213,59 @@ function initTimeline() {
 // Initialize timeline when DOM is ready
 document.addEventListener('DOMContentLoaded', initTimeline);
 
-// Skills interaction - click node to highlight card, click again to deselect
+// Skills interaction - sync IDE module rows with skill cards
+const skillLabels = {
+    programming: 'languages',
+    frontend: 'frontend',
+    backend: 'backend',
+    parallel: 'hpc_computing',
+    ai: 'ml_frameworks',
+    devops: 'devops'
+};
+
+function selectSkill(skill, scrollTarget) {
+    const ideStatusText = document.getElementById('ideStatusText');
+    const targetNode = skill ? document.querySelector('.skill-node[data-skill="' + skill + '"]') : null;
+    const targetCard = skill ? document.querySelector('.skill-item[data-skill="' + skill + '"]') : null;
+    const isAlreadyActive = targetNode && targetNode.classList.contains('active');
+
+    document.querySelectorAll('.skill-node').forEach(function(n) {
+        n.classList.remove('active');
+        n.setAttribute('aria-pressed', 'false');
+    });
+    document.querySelectorAll('.skill-item').forEach(function(c) {
+        c.classList.remove('active');
+    });
+
+    if (!isAlreadyActive && skill && targetNode && targetCard) {
+        targetNode.classList.add('active');
+        targetNode.setAttribute('aria-pressed', 'true');
+        targetCard.classList.add('active');
+        if (ideStatusText) {
+            var detailsEl = targetCard.querySelector('p');
+            var details = detailsEl ? detailsEl.textContent : '';
+            ideStatusText.textContent = (skillLabels[skill] || skill) + ' → ' + details;
+        }
+        if (scrollTarget && window.innerWidth > 1024) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    } else if (ideStatusText) {
+        ideStatusText.textContent = 'Select a skill module to highlight';
+    }
+}
+
 document.querySelectorAll('.skill-node[data-skill]').forEach(function(node) {
     node.addEventListener('click', function() {
         var skill = this.getAttribute('data-skill');
         var targetCard = document.querySelector('.skill-item[data-skill="' + skill + '"]');
-        var isActive = this.classList.contains('active');
-        
-        // Remove active from all nodes and cards
-        document.querySelectorAll('.skill-node').forEach(function(n) { n.classList.remove('active'); });
-        document.querySelectorAll('.skill-item').forEach(function(c) { c.classList.remove('active'); });
-        
-        // If it wasn't active, activate it
-        if (!isActive && targetCard) {
-            this.classList.add('active');
-            targetCard.classList.add('active');
-            targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        selectSkill(skill, targetCard);
     });
 });
 
-// Click on card to deselect both
 document.querySelectorAll('.skill-item[data-skill]').forEach(function(card) {
     card.addEventListener('click', function() {
         var skill = this.getAttribute('data-skill');
         var targetNode = document.querySelector('.skill-node[data-skill="' + skill + '"]');
-        
-        if (this.classList.contains('active')) {
-            this.classList.remove('active');
-            if (targetNode) targetNode.classList.remove('active');
-        }
+        selectSkill(skill, targetNode);
     });
 });

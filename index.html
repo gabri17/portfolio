@@ -47,6 +47,7 @@ Free HTML CSS Template
                 <!-- <li><a href="#contact">Contact</a></li> -->
             </ul>
         </div>
+        <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
     </nav>
 
     <section id="home" class="hero">
@@ -137,32 +138,105 @@ Free HTML CSS Template
             <div class="skills-container">
                 <div class="skills-wrapper">
                     <div class="skills-visual">
-                        <div class="skills-circle">
-                            <div class="skill-node" data-skill="programming">
-                                <div class="skill-icon">&lt;/&gt;</div>
-                                <div class="skill-name">Programming Languages</div>
+                        <div class="ide-window" role="region" aria-label="Interactive Developer Tech Stack">
+                            <div class="ide-header">
+                                <div class="ide-dots" aria-hidden="true">
+                                    <span class="ide-dot dot-close"></span>
+                                    <span class="ide-dot dot-min"></span>
+                                    <span class="ide-dot dot-max"></span>
+                                </div>
+                                <div class="ide-tab">
+                                    <span class="ide-file-icon">&lt;/&gt;</span>
+                                    <span class="ide-filename">gabriele.stack.ts</span>
+                                </div>
+                                <div class="ide-badge">TS</div>
                             </div>
-                            <div class="skill-node" data-skill="frontend">
-                                <div class="skill-icon">🎨</div>
-                                <div class="skill-name">Frontend</div>
+
+                            <div class="ide-body">
+                                <div class="ide-line ide-static">
+                                    <span class="line-num">01</span>
+                                    <span class="code-text"><span class="tok-kw">const</span> <span class="tok-var">gabriele</span><span class="tok-op">:</span> <span class="tok-type">Developer</span> <span class="tok-op">=</span> <span class="tok-brace">{</span></span>
+                                </div>
+                                <div class="ide-line ide-static">
+                                    <span class="line-num">02</span>
+                                    <span class="code-text indent-1"><span class="tok-prop">focus</span><span class="tok-op">:</span> <span class="tok-str">"Full-Stack &amp; Data Science"</span><span class="tok-op">,</span></span>
+                                </div>
+                                <div class="ide-line ide-static">
+                                    <span class="line-num">03</span>
+                                    <span class="code-text indent-1"><span class="tok-prop">skills</span><span class="tok-op">:</span> <span class="tok-brace">{</span> <span class="tok-comment">// Click to inspect</span></span>
+                                </div>
+
+                                <button type="button" class="skill-node" data-skill="programming" aria-pressed="false">
+                                    <span class="line-num">04</span>
+                                    <span class="code-text indent-2">
+                                        <span class="tok-key">languages</span><span class="tok-op">:</span>
+                                        <span class="tok-array"><span class="tok-brace">[</span><span class="tok-str">"Java"</span><span class="tok-op">,</span> <span class="tok-str">"Python"</span><span class="tok-op">,</span> <span class="tok-str">"C/C++"</span><span class="tok-op">,</span> <span class="tok-str">"TS"</span><span class="tok-op">,</span> <span class="tok-comment">...</span><span class="tok-brace">]</span><span class="tok-op">,</span></span>
+                                    </span>
+                                    <span class="node-tag">8</span>
+                                </button>
+
+                                <button type="button" class="skill-node" data-skill="frontend" aria-pressed="false">
+                                    <span class="line-num">05</span>
+                                    <span class="code-text indent-2">
+                                        <span class="tok-key">frontend</span><span class="tok-op">:</span>
+                                        <span class="tok-array"><span class="tok-brace">[</span><span class="tok-str">"Angular"</span><span class="tok-op">,</span> <span class="tok-str">"Vue.js"</span><span class="tok-op">,</span> <span class="tok-str">"HTML5"</span><span class="tok-op">,</span> <span class="tok-str">"CSS3"</span><span class="tok-brace">]</span><span class="tok-op">,</span></span>
+                                    </span>
+                                    <span class="node-tag">4</span>
+                                </button>
+
+                                <button type="button" class="skill-node" data-skill="backend" aria-pressed="false">
+                                    <span class="line-num">06</span>
+                                    <span class="code-text indent-2">
+                                        <span class="tok-key">backend</span><span class="tok-op">:</span>
+                                        <span class="tok-array"><span class="tok-brace">[</span><span class="tok-str">"Spring Boot"</span><span class="tok-op">,</span> <span class="tok-str">"Node.js"</span><span class="tok-op">,</span> <span class="tok-str">"SQL"</span><span class="tok-op">,</span> <span class="tok-comment">...</span><span class="tok-brace">]</span><span class="tok-op">,</span></span>
+                                    </span>
+                                    <span class="node-tag">7</span>
+                                </button>
+
+                                <button type="button" class="skill-node" data-skill="parallel" aria-pressed="false">
+                                    <span class="line-num">07</span>
+                                    <span class="code-text indent-2">
+                                        <span class="tok-key">hpc_computing</span><span class="tok-op">:</span>
+                                        <span class="tok-array"><span class="tok-brace">[</span><span class="tok-str">"OpenMP"</span><span class="tok-op">,</span> <span class="tok-str">"MPI"</span><span class="tok-op">,</span> <span class="tok-str">"PySpark"</span><span class="tok-op">,</span> <span class="tok-str">"Akka"</span><span class="tok-brace">]</span><span class="tok-op">,</span></span>
+                                    </span>
+                                    <span class="node-tag">4</span>
+                                </button>
+
+                                <button type="button" class="skill-node" data-skill="ai" aria-pressed="false">
+                                    <span class="line-num">08</span>
+                                    <span class="code-text indent-2">
+                                        <span class="tok-key">ml_frameworks</span><span class="tok-op">:</span>
+                                        <span class="tok-array"><span class="tok-brace">[</span><span class="tok-str">"TensorFlow"</span><span class="tok-op">,</span> <span class="tok-str">"PyTorch"</span><span class="tok-op">,</span> <span class="tok-str">"sklearn"</span><span class="tok-brace">]</span><span class="tok-op">,</span></span>
+                                    </span>
+                                    <span class="node-tag">3</span>
+                                </button>
+
+                                <button type="button" class="skill-node" data-skill="devops" aria-pressed="false">
+                                    <span class="line-num">09</span>
+                                    <span class="code-text indent-2">
+                                        <span class="tok-key">devops</span><span class="tok-op">:</span>
+                                        <span class="tok-array"><span class="tok-brace">[</span><span class="tok-str">"Docker"</span><span class="tok-op">,</span> <span class="tok-str">"K8s"</span><span class="tok-op">,</span> <span class="tok-str">"Git"</span><span class="tok-op">,</span> <span class="tok-str">"Linux"</span><span class="tok-op">,</span> <span class="tok-str">"CI/CD"</span><span class="tok-brace">]</span></span>
+                                    </span>
+                                    <span class="node-tag">6</span>
+                                </button>
+
+                                <div class="ide-line ide-static">
+                                    <span class="line-num">10</span>
+                                    <span class="code-text indent-1"><span class="tok-brace">}</span></span>
+                                </div>
+                                <div class="ide-line ide-static">
+                                    <span class="line-num">11</span>
+                                    <span class="code-text"><span class="tok-brace">}</span><span class="tok-op">;</span></span>
+                                </div>
                             </div>
-                            <div class="skill-node" data-skill="backend">
-                                <div class="skill-icon">⚙️</div>
-                                <div class="skill-name">Backend</div>
+
+                            <div class="ide-footer">
+                                <div class="ide-status">
+                                    <span class="status-dot"></span>
+                                    <span class="status-prompt" id="ideStatusText">Select a skill module to highlight</span>
+                                </div>
+                                <div class="ide-meta">UTF-8 &bull; TypeScript</div>
                             </div>
-                            <div class="skill-node" data-skill="parallel">
-                                <div class="skill-icon">⚡</div>
-                                <div class="skill-name">HPC & Distributed Computing</div>
-                            </div>
-                            <div class="skill-node" data-skill="ai">
-                                <div class="skill-icon">🧠</div>
-                                <div class="skill-name">ML Frameworks</div>
-                            </div>
-                            <div class="skill-node" data-skill="devops">
-                                <div class="skill-icon">🚀</div>
-                                <div class="skill-name">DevOps</div>
-                            </div>
-                            <div class="skills-center">GV</div>
                         </div>
                     </div>
                     
@@ -499,6 +573,8 @@ Free HTML CSS Template
         <div class="footer-bottom">
             <p class="footer-copyright">
                 © 2026 Gabriele Volani. All rights reserved.
+                <br>
+                Template by  <a href="https://www.tooplate.com" target="_blank" rel="noopener noreferrer" class="tooplate">Toolplate</a>
             </p>
             <!-- <div class="footer-credits">
                 <a href="https://www.tooplate.com" target="_blank" rel="noopener noreferrer" class="footer-credit-link tooplate">
