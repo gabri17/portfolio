@@ -149,14 +149,19 @@ Free HTML CSS Template
                                     <span class="ide-dot dot-min"></span>
                                     <span class="ide-dot dot-max"></span>
                                 </div>
-                                <div class="ide-tab">
-                                    <span class="ide-file-icon">&lt;/&gt;</span>
-                                    <span class="ide-filename">gabriele.stack.ts</span>
+                                <div class="ide-tab" id="ideTab">
+                                    <span class="ide-file-icon" id="ideTabIcon">&lt;/&gt;</span>
+                                    <span class="ide-filename" id="ideTabTitle">gabriele.stack.ts</span>
                                 </div>
-                                <div class="ide-badge">TS</div>
+                                <button type="button" class="ide-run-btn" id="ideRunBtn" title="Run gabriele.stack.ts" aria-label="Run Code">
+                                    <svg class="run-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    <span>Run</span>
+                                </button>
                             </div>
 
-                            <div class="ide-body">
+                            <div class="ide-body" id="ideCodeBody">
                                 <div class="ide-line ide-static">
                                     <span class="line-num">01</span>
                                     <span class="code-text"><span class="tok-kw">const</span> <span class="tok-var">gabriele</span><span class="tok-op">:</span> <span class="tok-type">Developer</span> <span class="tok-op">=</span> <span class="tok-brace">{</span></span>
@@ -231,6 +236,105 @@ Free HTML CSS Template
                                 <div class="ide-line ide-static">
                                     <span class="line-num">11</span>
                                     <span class="code-text"><span class="tok-brace">}</span><span class="tok-op">;</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Secret Easter Egg: Blackjack Mini-Game -->
+                            <div class="ide-blackjack" id="ideBlackjack" style="display: none;" aria-label="Blackjack Game">
+                                <div class="bj-top-bar">
+                                    <div class="bj-balance" title="Your current coins">
+                                        <span class="bj-coin-icon">🪙</span>
+                                        <span class="bj-coin-label">Coins:</span>
+                                        <span class="bj-coin-val" id="bjCoins">100</span>
+                                    </div>
+                                    <div class="bj-bet-badge" id="bjBetBadge">
+                                        <span class="bj-bet-label">Bet:</span>
+                                        <span class="bj-bet-val" id="bjBetDisplay">10</span>
+                                    </div>
+                                    <div class="bj-status-pill" id="bjStatusPill">BETTING</div>
+                                </div>
+
+                                <div class="bj-banner" id="bjBanner">Select your bet and click Deal to start!</div>
+
+                                <div class="bj-table">
+                                    <!-- Dealer Area -->
+                                    <div class="bj-hand-box">
+                                        <div class="bj-hand-header">
+                                            <span class="bj-hand-title">DEALER</span>
+                                            <span class="bj-hand-score" id="bjDealerScore">-</span>
+                                        </div>
+                                        <div class="bj-cards-container" id="bjDealerCards">
+                                            <span class="bj-cards-empty">Cards will appear here</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Player Area -->
+                                    <div class="bj-hand-box">
+                                        <div class="bj-hand-header">
+                                            <span class="bj-hand-title">YOU</span>
+                                            <span class="bj-hand-score" id="bjPlayerScore">-</span>
+                                        </div>
+                                        <div class="bj-cards-container" id="bjPlayerCards">
+                                            <span class="bj-cards-empty">Cards will appear here</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Controls Section -->
+                                <div class="bj-controls-wrapper">
+                                    <!-- Betting Mode Controls -->
+                                    <div class="bj-bet-controls" id="bjBetControls">
+                                        <div class="bj-chips-row">
+                                            <button type="button" class="bj-chip-btn active" data-bet="10">10</button>
+                                            <button type="button" class="bj-chip-btn" data-bet="25">25</button>
+                                            <button type="button" class="bj-chip-btn" data-bet="50">50</button>
+                                            <button type="button" class="bj-chip-btn bj-chip-allin" data-bet="all">ALL IN</button>
+                                        </div>
+                                        <button type="button" class="bj-main-btn bj-deal-btn" id="bjDealBtn">
+                                            <span>Deal Hand 🃏</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Play Action Controls -->
+                                    <div class="bj-action-controls" id="bjActionControls" style="display: none;">
+                                        <button type="button" class="bj-main-btn bj-hit-btn" id="bjHitBtn">
+                                            <span>+ Card</span>
+                                        </button>
+                                        <button type="button" class="bj-main-btn bj-stand-btn" id="bjStandBtn">
+                                            <span>✋ Stay</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Next Round Controls -->
+                                    <div class="bj-roundover-controls" id="bjRoundOverControls" style="display: none;">
+                                        <button type="button" class="bj-main-btn bj-next-btn" id="bjNextBtn">
+                                            <span>Next Round →</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- GAME OVER Panel -->
+                                    <div class="bj-gameover-panel" id="bjGameOverPanel" style="display: none;">
+                                        <div class="bj-gameover-title">GAME OVER</div>
+                                        <p class="bj-gameover-desc">You're out of coins! The house took everything.</p>
+                                        <!-- <div class="bj-gameover-actions">
+                                            <button type="button" class="bj-main-btn bj-restart-big-btn" id="bjGameOverRestartBtn">
+                                                🔄 Restart (100 Coins)
+                                            </button>
+                                            <button type="button" class="bj-sub-btn" id="bjGameOverBackBtn" title="Back to code editor">
+                                                ← Go Back
+                                            </button>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <!-- Utility Buttons Below -->
+                                <div class="bj-bottom-bar">
+                                    <button type="button" class="bj-sub-btn" id="bjBackBtn" title="Back to code editor">
+                                        ← Go Back
+                                    </button>
+                                    <button type="button" class="bj-sub-btn" id="bjRestartBtn" title="Restart game with 100 coins">
+                                        🔄 Restart (100 Coins)
+                                    </button>
                                 </div>
                             </div>
 

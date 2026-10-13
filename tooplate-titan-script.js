@@ -269,3 +269,537 @@ document.querySelectorAll('.skill-item[data-skill]').forEach(function(card) {
         selectSkill(skill, targetNode);
     });
 });
+
+// ==========================================================================
+// Easter Egg: IDE Run Button & Blackjack Mini-Game
+// ==========================================================================
+
+(function initBlackjackEasterEgg() {
+    // Elements
+    const ideRunBtn = document.getElementById('ideRunBtn');
+    const ideCodeBody = document.getElementById('ideCodeBody');
+    const ideBlackjack = document.getElementById('ideBlackjack');
+    const ideTabIcon = document.getElementById('ideTabIcon');
+    const ideTabTitle = document.getElementById('ideTabTitle');
+    const ideStatusText = document.getElementById('ideStatusText');
+
+    // Blackjack DOM Elements
+    const bjCoinsEl = document.getElementById('bjCoins');
+    const bjBetDisplay = document.getElementById('bjBetDisplay');
+    const bjStatusPill = document.getElementById('bjStatusPill');
+    const bjBanner = document.getElementById('bjBanner');
+    const bjDealerCards = document.getElementById('bjDealerCards');
+    const bjPlayerCards = document.getElementById('bjPlayerCards');
+    const bjDealerScore = document.getElementById('bjDealerScore');
+    const bjPlayerScore = document.getElementById('bjPlayerScore');
+
+    // Control groups
+    const bjBetControls = document.getElementById('bjBetControls');
+    const bjActionControls = document.getElementById('bjActionControls');
+    const bjRoundOverControls = document.getElementById('bjRoundOverControls');
+    const bjGameOverPanel = document.getElementById('bjGameOverPanel');
+
+    // Buttons
+    const bjDealBtn = document.getElementById('bjDealBtn');
+    const bjHitBtn = document.getElementById('bjHitBtn');
+    const bjStandBtn = document.getElementById('bjStandBtn');
+    const bjNextBtn = document.getElementById('bjNextBtn');
+    const bjBackBtn = document.getElementById('bjBackBtn');
+    const bjRestartBtn = document.getElementById('bjRestartBtn');
+    const bjGameOverRestartBtn = document.getElementById('bjGameOverRestartBtn');
+    const bjGameOverBackBtn = document.getElementById('bjGameOverBackBtn');
+    const chipBtns = document.querySelectorAll('.bj-chip-btn');
+
+    if (!ideRunBtn || !ideBlackjack) return;
+
+    // Run button Easter Egg logic (17 clicks required)
+    let runClicks = 0;
+    const REQUIRED_CLICKS = 17;
+    let isUnlocked = false;
+    let isGameOpen = false;
+
+    // Game state
+    let coins = 100;
+    let selectedBet = 10;
+    let currentBet = 0;
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let phase = 'betting'; // 'betting', 'player', 'dealer', 'roundOver', 'gameOver'
+
+    // Suits & Ranks
+    const SUITS = [
+        { sym: '♠', name: 'spades', isRed: false },
+        { sym: '♥', name: 'hearts', isRed: true },
+        { sym: '♦', name: 'diamonds', isRed: true },
+        { sym: '♣', name: 'clubs', isRed: false }
+    ];
+    const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+    // Progressive status hints for clicking Run
+    const statusMessages = {
+        //1: "Running gabriele.stack.ts... (exit code: 0)",
+        //3: "gabriele.stack.ts executed successfully in 12ms",
+        //6: "Stack compiled: 0 warnings, 0 errors. Systems nominal.",
+        //9: "Execution verified. Still clicking? 🤔",
+        //12: "Stack cache cleared. Something unusual is loading...",
+        //14: "Kernel process warming up... (3 clicks left)",
+        //15: "Secret protocol compiling... (2 clicks left)",
+        //16: "⚡ Terminal override in 1 click!"
+        14: "Stack compiled: 0 warnings, 0 errors.",
+        15: "Running gabriele.stack.ts... (exit code: 0)",
+        16: "gabriele.stack.ts executed successfully in 12ms"
+
+    };
+
+    ideRunBtn.addEventListener('click', function() {
+        if (isGameOpen) {
+            return;
+        }
+
+        if (isUnlocked) {
+            openGame();
+            return;
+        }
+
+        runClicks++;
+
+        // Visual press bounce
+        ideRunBtn.style.transform = 'scale(0.92)';
+        setTimeout(() => { ideRunBtn.style.transform = ''; }, 100);
+
+        if (statusMessages[runClicks] && ideStatusText) {
+            ideStatusText.textContent = statusMessages[runClicks];
+        } else if (runClicks < REQUIRED_CLICKS && ideStatusText) {
+            //ideStatusText.textContent = `Running stack... [${runClicks}/${REQUIRED_CLICKS}]`;
+        }
+
+        if (runClicks >= REQUIRED_CLICKS) {
+            isUnlocked = true;
+            if (ideStatusText) {
+                ideStatusText.textContent = "🔓 Access Granted: Welcome to Las Vegas!";
+            }
+            openGame();
+        }
+    });
+
+    function openGame() {
+        isGameOpen = true;
+        if (ideCodeBody) ideCodeBody.style.display = 'none';
+        ideBlackjack.style.display = 'flex';
+
+        if (ideTabIcon) ideTabIcon.textContent = '🃏';
+        if (ideTabTitle) ideTabTitle.textContent = 'blackjack.ts';
+
+        if (phase === 'gameOver') {
+            triggerGameOver();
+        } else if (phase === 'roundOver') {
+            // Keep current view or allow next round
+        } else if (phase !== 'player' && phase !== 'dealer') {
+            startBettingPhase();
+        }
+    }
+
+    function closeGame() {
+        restartFullGame()
+
+        isGameOpen = false;
+        runClicks = 0;
+        isUnlocked = false;
+        ideBlackjack.style.display = 'none';
+        if (ideCodeBody) ideCodeBody.style.display = 'flex';
+
+        if (ideTabIcon) ideTabIcon.innerHTML = '&lt;/&gt;';
+        if (ideTabTitle) ideTabTitle.textContent = 'gabriele.stack.ts';
+
+        if (ideStatusText) {
+            ideStatusText.textContent = 'Select a skill module to highlight';
+        }
+    }
+
+    function restartFullGame() {
+        coins = 100;
+        selectedBet = 10;
+        currentBet = 0;
+        playerHand = [];
+        dealerHand = [];
+        renderHands();
+        startBettingPhase("Game restarted with 100 coins! Place your bet.");
+    }
+
+    // Deck & Card management
+    function buildDeck() {
+        const newDeck = [];
+        for (const s of SUITS) {
+            for (const r of RANKS) {
+                newDeck.push({ rank: r, suit: s.sym, isRed: s.isRed });
+            }
+        }
+        // Fisher-Yates shuffle
+        for (let i = newDeck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+        }
+        return newDeck;
+    }
+
+    function drawCard() {
+        if (deck.length < 10) {
+            deck = buildDeck();
+        }
+        return deck.pop();
+    }
+
+    function calculateScore(hand) {
+        let total = 0;
+        let aces = 0;
+
+        for (const card of hand) {
+            if (card.rank === 'A') {
+                aces++;
+                total += 11;
+            } else if (['K', 'Q', 'J'].includes(card.rank)) {
+                total += 10;
+            } else {
+                total += parseInt(card.rank, 10);
+            }
+        }
+
+        while (total > 21 && aces > 0) {
+            total -= 10;
+            aces--;
+        }
+
+        return {
+            total: total,
+            isBlackjack: hand.length === 2 && total === 21
+        };
+    }
+
+    // Rendering functions
+    function createCardElement(card, isHidden) {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'bj-card';
+
+        if (isHidden) {
+            cardEl.classList.add('bj-card-back');
+            cardEl.innerHTML = `
+                <div class="bj-card-back-pattern">
+                    <span class="bj-back-glyph">&lt;/&gt;</span>
+                </div>
+            `;
+            return cardEl;
+        }
+
+        cardEl.classList.add(card.isRed ? 'suit-red' : 'suit-black');
+        cardEl.innerHTML = `
+            <div class="bj-card-corner top-left">
+                <span class="bj-card-val">${card.rank}</span>
+                <span class="bj-card-suit">${card.suit}</span>
+            </div>
+            <div class="bj-card-center">${card.suit}</div>
+            <div class="bj-card-corner bottom-right">
+                <span class="bj-card-val">${card.rank}</span>
+                <span class="bj-card-suit">${card.suit}</span>
+            </div>
+        `;
+        return cardEl;
+    }
+
+    function renderHands(hideDealerHole = false) {
+        // Dealer cards
+        bjDealerCards.innerHTML = '';
+        if (dealerHand.length === 0) {
+            bjDealerCards.innerHTML = '<span class="bj-cards-empty">Cards will appear here</span>';
+            bjDealerScore.textContent = '-';
+        } else {
+            dealerHand.forEach((card, index) => {
+                const isHidden = (index === 1 && hideDealerHole);
+                bjDealerCards.appendChild(createCardElement(card, isHidden));
+            });
+
+            if (hideDealerHole) {
+                const visibleCard = dealerHand[0];
+                const val = (visibleCard.rank === 'A') ? 11 : (['K', 'Q', 'J'].includes(visibleCard.rank) ? 10 : parseInt(visibleCard.rank, 10));
+                bjDealerScore.textContent = `${val} + ?`;
+            } else {
+                const dScore = calculateScore(dealerHand);
+                bjDealerScore.textContent = dScore.total;
+            }
+        }
+
+        // Player cards
+        bjPlayerCards.innerHTML = '';
+        if (playerHand.length === 0) {
+            bjPlayerCards.innerHTML = '<span class="bj-cards-empty">Cards will appear here</span>';
+            bjPlayerScore.textContent = '-';
+        } else {
+            playerHand.forEach(card => {
+                bjPlayerCards.appendChild(createCardElement(card, false));
+            });
+            const pScore = calculateScore(playerHand);
+            bjPlayerScore.textContent = pScore.total;
+        }
+    }
+
+    function updateCoinsUI() {
+        if (bjCoinsEl) bjCoinsEl.textContent = coins;
+        if (bjBetDisplay) bjBetDisplay.textContent = (phase === 'betting') ? selectedBet : currentBet;
+
+        // Update chip availability
+        chipBtns.forEach(btn => {
+            const betVal = btn.getAttribute('data-bet');
+            if (betVal === 'all') {
+                btn.disabled = (coins <= 0);
+            } else {
+                const num = parseInt(betVal, 10);
+                btn.disabled = (coins < num);
+            }
+
+            // Mark active
+            if (betVal === 'all' && selectedBet === coins && coins > 0) {
+                btn.classList.add('active');
+            } else if (betVal !== 'all' && parseInt(betVal, 10) === selectedBet) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Ensure selectedBet is valid
+        if (selectedBet > coins && coins > 0) {
+            selectedBet = coins;
+        }
+        if (selectedBet < 10 && coins >= 10) {
+            selectedBet = 10;
+        }
+        if (coins > 0 && selectedBet === 0) {
+            selectedBet = coins;
+        }
+    }
+
+    function setBanner(text, type = '') {
+        bjBanner.textContent = text;
+        bjBanner.className = 'bj-banner' + (type ? ' ' + type : '');
+    }
+
+    function setStatus(text, statusClass = '') {
+        bjStatusPill.textContent = text;
+        bjStatusPill.className = 'bj-status-pill' + (statusClass ? ' ' + statusClass : '');
+    }
+
+    // Phases
+    function startBettingPhase(customMsg) {
+        if (coins <= 0) {
+            triggerGameOver();
+            return;
+        }
+
+        phase = 'betting';
+        currentBet = 0;
+
+        // Auto-select sensible bet if previous selection > current coins
+        if (selectedBet > coins) {
+            selectedBet = coins;
+        } else if (selectedBet <= 0) {
+            selectedBet = Math.min(10, coins);
+        }
+
+        updateCoinsUI();
+        renderHands();
+
+        bjBetControls.style.display = 'flex';
+        bjActionControls.style.display = 'none';
+        bjRoundOverControls.style.display = 'none';
+        bjGameOverPanel.style.display = 'none';
+
+        setStatus('BETTING');
+        setBanner(customMsg || "Choose your bet amount and click Deal Hand.");
+    }
+
+    function dealHand() {
+        if (phase !== 'betting') return;
+
+        if (coins <= 0) {
+            triggerGameOver();
+            return;
+        }
+
+        if (selectedBet <= 0 || selectedBet > coins) {
+            selectedBet = Math.min(10, coins);
+        }
+
+        currentBet = selectedBet;
+        coins -= currentBet;
+        updateCoinsUI();
+
+        deck = buildDeck();
+        playerHand = [drawCard(), drawCard()];
+        dealerHand = [drawCard(), drawCard()];
+
+        const pScore = calculateScore(playerHand);
+
+        // Check Natural 21 Blackjack
+        if (pScore.isBlackjack) {
+            renderHands(false); // reveal dealer
+            const dScore = calculateScore(dealerHand);
+
+            if (dScore.isBlackjack) {
+                coins += currentBet; // Push
+                endRound('push', `Both have Blackjack! Push (tie) at 21. Bet returned.`);
+            } else {
+                const payout = Math.floor(currentBet * 2.5); // 3:2 payout (original bet + 1.5x)
+                coins += payout;
+                endRound('blackjack', `BLACKJACK! 🏆 Natural 21 pays 3:2 (+${payout - currentBet} coins)`);
+            }
+            return;
+        }
+
+        // Normal play
+        phase = 'player';
+        renderHands(true); // hide dealer hole card
+
+        bjBetControls.style.display = 'none';
+        bjActionControls.style.display = 'flex';
+        bjRoundOverControls.style.display = 'none';
+        bjGameOverPanel.style.display = 'none';
+
+        setStatus('YOUR TURN', 'status-play');
+        setBanner("Your turn: Ask for + Card (Hit) or ✋ Stay (Stand)?");
+    }
+
+    function hit() {
+        if (phase !== 'player') return;
+
+        playerHand.push(drawCard());
+        renderHands(true);
+
+        const pScore = calculateScore(playerHand);
+
+        if (pScore.total > 21) {
+            // Bust!
+            renderHands(false); // reveal dealer
+            endRound('bust', `Bust! You went over 21 with ${pScore.total}. Dealer wins.`);
+        } else if (pScore.total === 21) {
+            // Automatically stand on 21
+            stand();
+        }
+    }
+
+    function stand() {
+        if (phase !== 'player') return;
+
+        phase = 'dealer';
+        bjActionControls.style.display = 'none';
+        setStatus('DEALER');
+        setBanner("Dealer's turn... revealing cards.");
+
+        renderHands(false); // reveal hole card
+
+        // Dealer draws until total >= 17
+        function stepDealer() {
+            let dScore = calculateScore(dealerHand);
+            if (dScore.total < 17) {
+                setTimeout(() => {
+                    dealerHand.push(drawCard());
+                    renderHands(false);
+                    stepDealer();
+                }, 450);
+            } else {
+                resolveOutcome();
+            }
+        }
+
+        setTimeout(stepDealer, 400);
+    }
+
+    function resolveOutcome() {
+        const pTotal = calculateScore(playerHand).total;
+        const dTotal = calculateScore(dealerHand).total;
+
+        if (dTotal > 21) {
+            // Dealer busts
+            const winAmount = currentBet * 2;
+            coins += winAmount;
+            endRound('win', `Dealer busts with ${dTotal}! You win +${currentBet} coins! 🎉`);
+        } else if (pTotal > dTotal) {
+            // Player has higher total
+            const winAmount = currentBet * 2;
+            coins += winAmount;
+            endRound('win', `You win! ${pTotal} beats Dealer's ${dTotal} (+${currentBet} coins) 🎉`);
+        } else if (dTotal > pTotal) {
+            // Dealer wins
+            endRound('lose', `Dealer wins with ${dTotal} against your ${pTotal}.`);
+        } else {
+            // Push (tie)
+            coins += currentBet;
+            endRound('push', `Push (Tie) at ${pTotal}! Your bet was returned.`);
+        }
+    }
+
+    function endRound(type, msg) {
+        phase = 'roundOver';
+        updateCoinsUI();
+
+        if (type === 'win') {
+            setStatus('YOU WIN', 'status-win');
+            setBanner(msg, 'win');
+        } else if (type === 'blackjack') {
+            setStatus('BLACKJACK', 'status-win');
+            setBanner(msg, 'blackjack');
+        } else if (type === 'lose' || type === 'bust') {
+            setStatus('DEALER WINS', 'status-lose');
+            setBanner(msg, 'lose');
+        } else if (type === 'push') {
+            setStatus('PUSH', 'status-push');
+            setBanner(msg, 'push');
+        }
+
+        if (coins <= 0) {
+            setTimeout(triggerGameOver, 700);
+        } else {
+            bjActionControls.style.display = 'none';
+            bjBetControls.style.display = 'none';
+            bjRoundOverControls.style.display = 'flex';
+        }
+    }
+
+    function triggerGameOver() {
+        phase = 'gameOver';
+        updateCoinsUI();
+        bjBetControls.style.display = 'none';
+        bjActionControls.style.display = 'none';
+        bjRoundOverControls.style.display = 'none';
+        bjGameOverPanel.style.display = 'flex';
+
+        setStatus('GAME OVER', 'status-lose');
+        setBanner("GAME OVER: You have 0 coins left!", 'lose');
+    }
+
+    // Event Listeners
+    chipBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (phase !== 'betting') return;
+            const betVal = this.getAttribute('data-bet');
+            if (betVal === 'all') {
+                selectedBet = coins;
+            } else {
+                selectedBet = parseInt(betVal, 10);
+            }
+            updateCoinsUI();
+        });
+    });
+
+    bjDealBtn.addEventListener('click', dealHand);
+    bjHitBtn.addEventListener('click', hit);
+    bjStandBtn.addEventListener('click', stand);
+    bjNextBtn.addEventListener('click', () => startBettingPhase());
+
+    // Navigation and Restart buttons
+    bjBackBtn.addEventListener('click', closeGame);
+    if (bjGameOverBackBtn) {
+        bjGameOverBackBtn.addEventListener('click', closeGame);
+    }
+    bjRestartBtn.addEventListener('click', restartFullGame);
+    bjGameOverRestartBtn.addEventListener('click', restartFullGame);
+})();
