@@ -348,35 +348,131 @@ Free HTML CSS Template
                         </div>
                     </div>
                     
-                    <div class="skills-list">
-                        <div class="skill-item" data-skill="programming">
-                            <h4>Programming Languages</h4>
-                            <p>Java, Python, C/C++, JavaScript, TypeScript, SQL, Solidity, Shell Scripting</p>
-                        </div>
-                        
-                        <div class="skill-item" data-skill="frontend">
-                            <h4>Frontend</h4>
-                            <p>Angular, Vue.js, HTML5, CSS3</p>
-                        </div>
-                        
-                        <div class="skill-item" data-skill="backend">
-                            <h4>Backend</h4>
-                            <p>Spring Boot, JDBC, Hibernate, Express, Node.js, PostgreSQL, MongoDB</p>
-                        </div>
-                        
-                        <div class="skill-item" data-skill="parallel">
-                            <h4>HPC & Distributed Computing</h4>
-                            <p>OpenMP, MPI, PySpark, Akka</p>
+                    <div class="skills-stack-panel">
+                        <div class="skills-stack-meta">
+                            <div class="stack-badge">
+                                <span class="stack-badge-icon">🗂️</span>
+                                <span class="stack-badge-text">Interactive Tech Stack</span>
+                            </div>
+                            <div class="stack-nav">
+                                <button type="button" class="stack-nav-btn" id="stackPrevBtn" title="Previous module" aria-label="Previous Module">‹</button>
+                                <span class="stack-counter" id="stackCounter">1 / 6</span>
+                                <button type="button" class="stack-nav-btn" id="stackNextBtn" title="Next module" aria-label="Next Module">›</button>
+                            </div>
                         </div>
 
-                        <div class="skill-item" data-skill="ai">
-                            <h4>ML Frameworks</h4>
-                            <p>TensorFlow, PyTorch, scikit-learn</p>
+                        <div class="skills-list skills-stack" id="skillsStack">
+                            <div class="skill-item" data-skill="programming">
+                                <div class="skill-card-top">
+                                    <span class="skill-card-badge">01 // LANGUAGES</span>
+                                    <span class="skill-card-tag-count">8 items</span>
+                                </div>
+                                <h4>Programming Languages</h4>
+                                <!-- <p>Java, Python, C/C++, JavaScript, TypeScript, SQL, Solidity, Shell Scripting</p> -->
+                                <div class="skill-tech-chips">
+                                    <span class="tech-chip">Java</span>
+                                    <span class="tech-chip">Python</span>
+                                    <span class="tech-chip">C/C++</span>
+                                    <span class="tech-chip">JavaScript</span>
+                                    <span class="tech-chip">TypeScript</span>
+                                    <span class="tech-chip">SQL</span>
+                                    <span class="tech-chip">Solidity</span>
+                                    <span class="tech-chip">Shell</span>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-item" data-skill="frontend">
+                                <div class="skill-card-top">
+                                    <span class="skill-card-badge">02 // FRONTEND</span>
+                                    <span class="skill-card-tag-count">4 items</span>
+                                </div>
+                                <h4>Frontend</h4>
+                                <!-- <p>Angular, Vue.js, HTML5, CSS3</p> -->
+                                <div class="skill-tech-chips">
+                                    <span class="tech-chip">Angular</span>
+                                    <span class="tech-chip">Vue.js</span>
+                                    <span class="tech-chip">HTML5</span>
+                                    <span class="tech-chip">CSS3</span>
+                                    <!-- <span class="tech-chip">Responsive UI</span> -->
+                                </div>
+                            </div>
+                            
+                            <div class="skill-item" data-skill="backend">
+                                <div class="skill-card-top">
+                                    <span class="skill-card-badge">03 // BACKEND</span>
+                                    <span class="skill-card-tag-count">7 items</span>
+                                </div>
+                                <h4>Backend</h4>
+                                <!-- <p>Spring Boot, JDBC, Hibernate, Express, Node.js, PostgreSQL, MongoDB</p> -->
+                                <div class="skill-tech-chips">
+                                    <span class="tech-chip">Spring Boot</span>
+                                    <span class="tech-chip">Node.js</span>
+                                    <span class="tech-chip">Express</span>
+                                    <span class="tech-chip">PostgreSQL</span>
+                                    <span class="tech-chip">MongoDB</span>
+                                    <span class="tech-chip">Hibernate</span>
+                                    <span class="tech-chip">JDBC</span>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-item" data-skill="parallel">
+                                <div class="skill-card-top">
+                                    <span class="skill-card-badge">04 // HPC &amp; PARALLEL</span>
+                                    <span class="skill-card-tag-count">4 items</span>
+                                </div>
+                                <h4>HPC &amp; Distributed Computing</h4>
+                                <!-- <p>OpenMP, MPI, PySpark, Akka</p> -->
+                                <div class="skill-tech-chips">
+                                    <span class="tech-chip">OpenMP</span>
+                                    <span class="tech-chip">MPI</span>
+                                    <span class="tech-chip">PySpark</span>
+                                    <span class="tech-chip">Akka</span>
+                                    <!-- <span class="tech-chip">High-Throughput</span> -->
+                                </div>
+                            </div>
+
+                            <div class="skill-item" data-skill="ai">
+                                <div class="skill-card-top">
+                                    <span class="skill-card-badge">05 // ML &amp; AI</span>
+                                    <span class="skill-card-tag-count">3 items</span>
+                                </div>
+                                <h4>ML Frameworks</h4>
+                                <!-- <p>TensorFlow, PyTorch, scikit-learn</p> -->
+                                <div class="skill-tech-chips">
+                                    <span class="tech-chip">TensorFlow</span>
+                                    <span class="tech-chip">PyTorch</span>
+                                    <span class="tech-chip">scikit-learn</span>
+                                    <!-- <span class="tech-chip">Deep Learning</span> -->
+                                    <!-- <span class="tech-chip">Data Science</span> -->
+                                </div>
+                            </div>
+
+                            <div class="skill-item" data-skill="devops">
+                                <div class="skill-card-top">
+                                    <span class="skill-card-badge">06 // DEVOPS</span>
+                                    <span class="skill-card-tag-count">6 items</span>
+                                </div>
+                                <h4>DevOps</h4>
+                                <!-- <p>Docker, Kubernetes, Git, Linux, CI/CD, Cloud Deployment</p> -->
+                                <div class="skill-tech-chips">
+                                    <span class="tech-chip">Docker</span>
+                                    <span class="tech-chip">Kubernetes</span>
+                                    <span class="tech-chip">Git</span>
+                                    <span class="tech-chip">Linux</span>
+                                    <span class="tech-chip">CI/CD</span>
+                                    <!-- <span class="tech-chip">Cloud</span> -->
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="skill-item" data-skill="devops">
-                            <h4>DevOps</h4>
-                            <p>Docker, Kubernetes, Git, Linux, CI/CD, Cloud Deployment</p>
+                        <!-- Stack indicator dots -->
+                        <div class="stack-dots" id="stackDots" aria-label="Deck pagination">
+                            <button type="button" class="stack-dot active" data-skill="programming" title="Programming Languages"></button>
+                            <button type="button" class="stack-dot" data-skill="frontend" title="Frontend"></button>
+                            <button type="button" class="stack-dot" data-skill="backend" title="Backend"></button>
+                            <button type="button" class="stack-dot" data-skill="parallel" title="HPC &amp; Distributed"></button>
+                            <button type="button" class="stack-dot" data-skill="ai" title="ML Frameworks"></button>
+                            <button type="button" class="stack-dot" data-skill="devops" title="DevOps"></button>
                         </div>
                     </div>
                 </div>

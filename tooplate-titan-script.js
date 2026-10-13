@@ -213,7 +213,7 @@ function initTimeline() {
 // Initialize timeline when DOM is ready
 document.addEventListener('DOMContentLoaded', initTimeline);
 
-// Skills interaction - sync IDE module rows with skill cards
+// Skills interaction - sync IDE module rows with stacked skill cards
 const skillLabels = {
     programming: 'languages',
     frontend: 'frontend',
@@ -223,52 +223,155 @@ const skillLabels = {
     devops: 'devops'
 };
 
-function selectSkill(skill, scrollTarget) {
+const skillDetailsFallback = {
+    programming: 'Java, Python, C/C++, JavaScript, TypeScript, SQL, Solidity, Shell',
+    frontend: 'Angular, Vue.js, HTML5, CSS3',
+    backend: 'Spring Boot, Node.js, Express, PostgreSQL, MongoDB, Hibernate, JDBC',
+    parallel: 'OpenMP, MPI, PySpark, Akka',
+    ai: 'TensorFlow, PyTorch, scikit-learn',
+    devops: 'Docker, Kubernetes, Git, Linux, CI/CD'
+};
+
+const skillOrder = ['programming', 'frontend', 'backend', 'parallel', 'ai', 'devops'];
+let activeSkill = 'programming';
+
+function updateSkillStack(selectedSkill) {
+    activeSkill = selectedSkill || 'programming';
+    const targetIdx = skillOrder.indexOf(activeSkill);
+    if (targetIdx === -1) return;
+
+    // Order of skills with selectedSkill at depth 0, followed by the rest cyclically
+    const orderedSkills = [];
+    for (let i = 0; i < skillOrder.length; i++) {
+        orderedSkills.push(skillOrder[(targetIdx + i) % skillOrder.length]);
+    }
+
+    // Apply depths to each card in the stack
+    document.querySelectorAll('.skill-item[data-skill]').forEach(function(card) {
+        const skill = card.getAttribute('data-skill');
+        const depth = orderedSkills.indexOf(skill);
+
+        card.setAttribute('data-depth', depth >= 0 ? depth : 5);
+
+        if (depth === 0) {
+            card.classList.add('active', 'is-top');
+            card.classList.remove('card-promote');
+            // Force reflow to re-trigger card promotion animation
+            void card.offsetWidth;
+            card.classList.add('card-promote');
+        } else {
+            card.classList.remove('active', 'is-top', 'card-promote');
+        }
+    });
+
+    // Update stack counter
+    const stackCounter = document.getElementById('stackCounter');
+    if (stackCounter) {
+        stackCounter.textContent = (targetIdx + 1) + ' / ' + skillOrder.length;
+    }
+
+    // Update stack indicator dots
+    document.querySelectorAll('.stack-dot[data-skill]').forEach(function(dot) {
+        if (dot.getAttribute('data-skill') === activeSkill) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+}
+
+function selectSkill(skill) {
     const ideStatusText = document.getElementById('ideStatusText');
     const targetNode = skill ? document.querySelector('.skill-node[data-skill="' + skill + '"]') : null;
     const targetCard = skill ? document.querySelector('.skill-item[data-skill="' + skill + '"]') : null;
-    const isAlreadyActive = targetNode && targetNode.classList.contains('active');
 
     document.querySelectorAll('.skill-node').forEach(function(n) {
         n.classList.remove('active');
         n.setAttribute('aria-pressed', 'false');
     });
-    document.querySelectorAll('.skill-item').forEach(function(c) {
-        c.classList.remove('active');
-    });
 
-    if (!isAlreadyActive && skill && targetNode && targetCard) {
+    if (skill && targetNode && targetCard) {
         targetNode.classList.add('active');
         targetNode.setAttribute('aria-pressed', 'true');
-        targetCard.classList.add('active');
+        updateSkillStack(skill);
+
         if (ideStatusText) {
-            var detailsEl = targetCard.querySelector('p');
-            var details = detailsEl ? detailsEl.textContent : '';
-            ideStatusText.textContent = (skillLabels[skill] || skill) + ' → ' + details;
+            // First read active tech chips from the card
+            var chips = Array.from(targetCard.querySelectorAll('.tech-chip'))
+                .map(function(c) { return c.textContent.trim(); })
+                .filter(Boolean);
+            var details = '';
+            if (chips.length > 0) {
+                details = chips.join(', ');
+            } else {
+                var detailsEl = targetCard.querySelector('p');
+                if (detailsEl && detailsEl.textContent.trim()) {
+                    details = detailsEl.textContent.trim();
+                } else if (skillDetailsFallback[skill]) {
+                    details = skillDetailsFallback[skill];
+                }
+            }
+            var label = skillLabels[skill] || skill;
+            ideStatusText.textContent = details ? (label + ' → ' + details) : label;
         }
-        if (scrollTarget && window.innerWidth > 1024) {
-            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    } else if (ideStatusText) {
-        ideStatusText.textContent = 'Select a skill module to highlight';
     }
 }
 
+// Click on left IDE rows
 document.querySelectorAll('.skill-node[data-skill]').forEach(function(node) {
     node.addEventListener('click', function() {
         var skill = this.getAttribute('data-skill');
-        var targetCard = document.querySelector('.skill-item[data-skill="' + skill + '"]');
-        selectSkill(skill, targetCard);
+        selectSkill(skill);
     });
 });
 
+// Click on stacked cards directly
 document.querySelectorAll('.skill-item[data-skill]').forEach(function(card) {
     card.addEventListener('click', function() {
         var skill = this.getAttribute('data-skill');
-        var targetNode = document.querySelector('.skill-node[data-skill="' + skill + '"]');
-        selectSkill(skill, targetNode);
+        selectSkill(skill);
     });
 });
+
+// Next / Previous buttons for the card stack
+const stackPrevBtn = document.getElementById('stackPrevBtn');
+const stackNextBtn = document.getElementById('stackNextBtn');
+
+if (stackPrevBtn) {
+    stackPrevBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const curIdx = skillOrder.indexOf(activeSkill);
+        const prevIdx = (curIdx - 1 + skillOrder.length) % skillOrder.length;
+        selectSkill(skillOrder[prevIdx]);
+    });
+}
+
+if (stackNextBtn) {
+    stackNextBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const curIdx = skillOrder.indexOf(activeSkill);
+        const nextIdx = (curIdx + 1) % skillOrder.length;
+        selectSkill(skillOrder[nextIdx]);
+    });
+}
+
+// Stack indicator dots
+document.querySelectorAll('.stack-dot[data-skill]').forEach(function(dot) {
+    dot.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const skill = this.getAttribute('data-skill');
+        selectSkill(skill);
+    });
+});
+
+// Initial stack setup on load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        selectSkill('programming');
+    });
+} else {
+    selectSkill('programming');
+}
 
 // ==========================================================================
 // Easter Egg: IDE Run Button & Blackjack Mini-Game
