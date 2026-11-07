@@ -2054,10 +2054,11 @@ section {
     left: 50%;
     top: 0;
     bottom: 0;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.05);
+    width: 2px;
+    background: rgba(255, 255, 255, 0.22);
     transform: translateX(-50%);
-    z-index: -1;
+    z-index: 0;
+    border-radius: 999px;
 }
 
 .timeline-progress {
@@ -2065,15 +2066,18 @@ section {
     left: 50%;
     top: 0;
     width: 2px;
+    height: 0;
     background: var(--accent-emerald);
     transform: translateX(-50%);
-    transition: height 0.3s ease;
-    z-index: 0;
+    transition: height 0.15s ease-out;
+    z-index: 1;
+    border-radius: 999px;
     box-shadow: 0 0 12px var(--accent-emerald-glow);
 }
 
 .timeline-item {
     position: relative;
+    z-index: 2;
     margin: 4rem 0;
     opacity: 0;
     transform: translateY(50px);
@@ -2123,7 +2127,7 @@ section {
 .timeline-node:hover {
     transform: translate(-50%, -50%) scale(1.15);
     border-color: var(--accent-emerald);
-    background: rgba(92, 184, 165, 0.12);
+    background: linear-gradient(rgba(92, 184, 165, 0.12), rgba(92, 184, 165, 0.12)), var(--surface-dark);
     box-shadow: 0 0 20px var(--accent-emerald-glow);
 }
 

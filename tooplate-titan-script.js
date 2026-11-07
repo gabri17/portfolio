@@ -119,32 +119,44 @@ function initTimeline() {
     // Timeline scroll progress
     function updateTimelineProgress() {
         const timelineContainer = document.querySelector('.timeline-container');
+        if (!timelineContainer || !timelineProgress) return;
         const containerRect = timelineContainer.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         
-        if (containerRect.top < windowHeight && containerRect.bottom > 0) {
-            const progress = Math.max(0, Math.min(1, 
-                (windowHeight - containerRect.top) / (containerRect.height + windowHeight)
-            ));
-            timelineProgress.style.height = `${progress * 100}%`;
+        if (containerRect.height <= 0) {
+            timelineProgress.style.height = '0%';
+            return;
         }
+
+        const triggerPoint = windowHeight * 0.6;
+        const progress = Math.max(0, Math.min(1, 
+            (triggerPoint - containerRect.top) / containerRect.height
+        ));
+        timelineProgress.style.height = `${progress * 100}%`;
     }
     
     // Timeline item visibility
     function updateTimelineItems() {
-        timelineItems.forEach((item, index) => {
+        const activeFilter = document.querySelector('.timeline-filter.active');
+        const activeCategory = activeFilter ? activeFilter.getAttribute('data-filter') : 'education';
+        let visibleIndex = 0;
+
+        timelineItems.forEach((item) => {
+            if (item.getAttribute('data-category') !== activeCategory) return;
             const rect = item.getBoundingClientRect();
             const isVisible = rect.top < window.innerHeight * 0.8;
             
             if (isVisible && !item.classList.contains('visible')) {
+                const delayIndex = visibleIndex++;
                 setTimeout(() => {
                     item.classList.add('visible');
-                }, index * 200);
+                }, delayIndex * 200);
             }
         });
     }
     
     // Timeline filtering
+    let filterTimeoutId = null;
     timelineFilters.forEach(filter => {
         filter.addEventListener('click', function() {
             const filterValue = this.getAttribute('data-filter');
@@ -152,6 +164,11 @@ function initTimeline() {
             // Update active filter
             timelineFilters.forEach(f => f.classList.remove('active'));
             this.classList.add('active');
+
+            if (filterTimeoutId) {
+                clearTimeout(filterTimeoutId);
+                filterTimeoutId = null;
+            }
             
             // Filter timeline items
             timelineItems.forEach(item => {
@@ -161,15 +178,20 @@ function initTimeline() {
                     setTimeout(() => {
                         item.style.opacity = '1';
                         item.style.transform = 'translateY(0)';
-                    }, 100);
+                    }, 50);
                 } else {
                     item.style.opacity = '0';
                     item.style.transform = 'translateY(30px)';
-                    setTimeout(() => {
-                        item.style.display = 'none';
-                    }, 300);
+                    item.style.display = 'none';
                 }
             });
+
+            updateTimelineProgress();
+            updateTimelineItems();
+            filterTimeoutId = setTimeout(() => {
+                updateTimelineProgress();
+                updateTimelineItems();
+            }, 100);
         });
     });
     
@@ -199,11 +221,12 @@ function initTimeline() {
         });
     });
     
-    // Listen for scroll events
+    // Listen for scroll and resize events
     window.addEventListener('scroll', () => {
         updateTimelineProgress();
         updateTimelineItems();
-    });
+    }, { passive: true });
+    window.addEventListener('resize', updateTimelineProgress);
     
     // Initial calls
     updateTimelineProgress();
